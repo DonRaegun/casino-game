@@ -13,7 +13,7 @@
 
 별도의 다운로드나 설치 없이 아래 링크에서 바로 플레이하실 수 있습니다. (PC / 모바일 모두 지원)
 
-👉 **[https://gsg920.github.io/casino-game/](https://gsg920.github.io/casino-game/)**
+👉 **[https://donraegun.github.io/casino-game/](https://donraegun.github.io/casino-game//)**
 
 > **💡 GitHub Pages 배포 설정 안내**  
 > 저장소의 `Settings` ➡️ `Pages` ➡️ `Build and deployment`에서 **Source: Deploy from a branch**, **Branch: main / (root)**로 지정 후 `Save`를 누르면 위 주소로 무료 웹 호스팅이 활성화됩니다.
