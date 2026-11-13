@@ -118,8 +118,11 @@
                 if (calculateBjScore(bjPlayerHand) === 21) {
                     bjPlayerBlackjack = true;
                     document.getElementById('bj-player-status').innerText = "BLACKJACK!";
-                    bjPlayerStand();
                 }
+                // 딜러는 첫 두 장이 블랙잭이면 플레이어가 히트나 더블을 하기 전에 바로 공개한다.
+                const dealerBlackjack = calculateBjScore(bjDealerHand.map(c => ({ ...c, hidden: false }))) === 21;
+                if (dealerBlackjack) document.getElementById('bj-status').innerText = "딜러 블랙잭!";
+                if (bjPlayerBlackjack || dealerBlackjack) bjPlayerStand();
             }, delay);
         }
 
