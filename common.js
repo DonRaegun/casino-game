@@ -515,9 +515,10 @@ let balance = 1000;
                 balance -= amount;
                 if (gameType === 'bj') bjBet += amount;
                 if (gameType === 'th') thBet += amount;
+                // 전부 걸리는 순간 한 번만 효과를 띄운다. 딜을 시작할 때는 다시 띄우지 않는다.
+                if (balance === 0) triggerAllInEffect(); else playSound('chip');
                 updateGlobalBalanceUI();
                 updateGameBetsUI();
-                playSound('chip');
             }
         }
 

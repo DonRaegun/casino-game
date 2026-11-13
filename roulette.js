@@ -5,6 +5,10 @@
         let rouletteBets = {};
         let rInSpin = false;
         let wheelAngle = 0;
+        let rFastSpin = false;
+        let rBall = null;      // 스핀 중 공의 위치 { angle, r }
+        let rWinIdx = null;    // 마지막 결과 칸. 공이 그 칸에 놓이고 강조된다.
+        const R_TAU = Math.PI * 2;
 
         function initRouletteBoard() {
             const grid = document.getElementById('roulette-numbers-grid');
@@ -73,29 +77,69 @@
             document.getElementById('r-total-bet').innerText = `$${total.toLocaleString()}`;
         }
 
+        function toggleRouletteFast() {
+            rFastSpin = !rFastSpin;
+            document.getElementById('btn-roulette-fast').innerText = `빠르게 보기: ${rFastSpin ? '켬' : '끔'}`;
+        }
+
+        // 바깥쪽 공 트랙과 안쪽 휠의 반지름. 공은 트랙을 돌다가 포켓 반지름으로 내려앉는다.
+        function rouletteGeometry(canvas) {
+            const cx = canvas.width / 2;
+            const R = cx - 3;
+            const wheelR = R * 0.78;
+            return { cx, cy: canvas.height / 2, R, wheelR, trackR: R * 0.89, pocketR: wheelR - 9 };
+        }
+
+        function drawRouletteBall(ctx, g, angle, r) {
+            const x = g.cx + Math.cos(angle) * r;
+            const y = g.cy + Math.sin(angle) * r;
+            ctx.beginPath();
+            ctx.arc(x + 1.5, y + 2.5, 5, 0, R_TAU);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+            ctx.fill();
+            const grad = ctx.createRadialGradient(x - 1.8, y - 1.8, 0.5, x, y, 5.5);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(1, '#94a3b8');
+            ctx.beginPath();
+            ctx.arc(x, y, 5.5, 0, R_TAU);
+            ctx.fillStyle = grad;
+            ctx.fill();
+        }
+
         function drawRouletteWheel() {
             const canvas = document.getElementById('roulette-wheel');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            const cx = canvas.width / 2;
-            const cy = canvas.height / 2;
-            const radius = canvas.width / 2 - 10;
-            const slice = (Math.PI * 2) / rouletteNumbers.length;
+            const g = rouletteGeometry(canvas);
+            const { cx, cy, R, wheelR, pocketR } = g;
+            const slice = R_TAU / rouletteNumbers.length;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 공 트랙
+            const track = ctx.createRadialGradient(cx, cy, wheelR, cx, cy, R);
+            track.addColorStop(0, '#1c1209');
+            track.addColorStop(1, '#4a3520');
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, R_TAU);
+            ctx.fillStyle = track;
+            ctx.fill();
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
             rouletteNumbers.forEach((num, i) => {
                 const angle = wheelAngle + i * slice;
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, radius, angle, angle + slice);
+                ctx.arc(cx, cy, wheelR, angle, angle + slice);
                 ctx.closePath();
 
                 if (num === 0) ctx.fillStyle = '#047857';
                 else if (redNumbers.includes(num)) ctx.fillStyle = '#b91c1c';
                 else ctx.fillStyle = '#0f172a';
                 ctx.fill();
-                ctx.strokeStyle = '#d97706';
+                ctx.strokeStyle = '#d9a441';
                 ctx.lineWidth = 1;
                 ctx.stroke();
 
@@ -104,18 +148,51 @@
                 ctx.rotate(angle + slice / 2);
                 ctx.textAlign = 'right';
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 12px sans-serif';
-                ctx.fillText(num, radius - 12, 4);
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(num, wheelR - 22, 4);
                 ctx.restore();
             });
 
+            // 결과 칸 강조
+            if (rWinIdx !== null && !rBall) {
+                const a = wheelAngle + rWinIdx * slice;
+                ctx.beginPath();
+                ctx.arc(cx, cy, wheelR - 1, a, a + slice);
+                ctx.arc(cx, cy, wheelR - 30, a + slice, a, true);
+                ctx.closePath();
+                ctx.strokeStyle = '#fde047';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+            }
+
             ctx.beginPath();
-            ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+            ctx.arc(cx, cy, 32, 0, R_TAU);
             ctx.fillStyle = '#d97706';
             ctx.fill();
             ctx.strokeStyle = '#fef08a';
             ctx.lineWidth = 3;
             ctx.stroke();
+
+            if (rBall) drawRouletteBall(ctx, g, rBall.angle, rBall.r);
+            else if (rWinIdx !== null) drawRouletteBall(ctx, g, wheelAngle + rWinIdx * slice + slice / 2, pocketR);
+        }
+
+        function rSmooth(a, b, x) {
+            const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+            return t * t * (3 - 2 * t);
+        }
+
+        // 진행도 p(0~1)에서 공의 위치. slotAngle은 그 순간 당첨 칸의 중심 각도이고,
+        // 마지막에 relative가 0이 되므로 공은 항상 미리 정한 칸에 들어간다.
+        function rouletteBallPose(p, slotAngle, g) {
+            let relative = R_TAU * 14 * Math.pow(1 - p, 2);            // 휠 기준으로 느려지는 공 회전
+            let r = g.trackR + (g.pocketR - g.trackR) * rSmooth(0.52, 0.78, p);  // 트랙에서 포켓으로 가라앉음
+            if (p > 0.74) {
+                const u = (p - 0.74) / 0.26;                            // 포켓 칸막이에 튕기는 구간
+                r += 16 * Math.pow(1 - u, 2) * Math.abs(Math.sin(3.2 * Math.PI * u));
+                relative += 0.1 * Math.pow(1 - u, 2) * Math.sin(5 * Math.PI * u);
+            }
+            return { angle: slotAngle + relative, r };
         }
 
         function spinRoulette() {
@@ -136,23 +213,40 @@
             const slice = (Math.PI * 2) / rouletteNumbers.length;
             
             const targetAngle = (Math.PI * 3 / 2) - (winIndex * slice) - (slice / 2);
-            const totalRotation = targetAngle + (Math.PI * 2 * 6);
+            // 이전 각도에서 이어서 돌아 끝에는 당첨 칸이 위쪽 화살표 아래에 온다.
+            const baseAngle = wheelAngle;
+            const totalRotation = (((targetAngle - baseAngle) % R_TAU) + R_TAU) % R_TAU + R_TAU * 6;
+            const slotOffset = winIndex * slice + slice / 2;
+            const geo = rouletteGeometry(document.getElementById('roulette-wheel'));
 
             let startTime = null;
-            const duration = 4000;
+            const duration = rFastSpin ? 3000 : 6500;
+            let lastSlot = -1;
+            let lastTick = 0;
+            rWinIdx = null;
 
             function animateSpin(timestamp) {
                 if (!startTime) startTime = timestamp;
-                const progress = (timestamp - startTime) / duration;
+                const progress = Math.min(1, (timestamp - startTime) / duration);
                 if (progress < 1) {
-                    const ease = 1 - Math.pow(1 - progress, 3);
-                    wheelAngle = totalRotation * ease;
+                    wheelAngle = baseAngle + totalRotation * (1 - Math.pow(1 - progress, 3));
+                    rBall = rouletteBallPose(progress, wheelAngle + slotOffset, geo);
                     drawRouletteWheel();
-                    if (Math.random() < 0.15) playSound('spin');
+                    if (progress < 0.7) {
+                        if (Math.random() < 0.15) playSound('spin');
+                    } else {
+                        // 공이 포켓 칸막이를 넘을 때마다 딸깍 소리를 낸다.
+                        const slot = Math.floor((((rBall.angle - wheelAngle) % R_TAU) + R_TAU) % R_TAU / slice);
+                        if (slot !== lastSlot && timestamp - lastTick > 35) { playSound('tick'); lastTick = timestamp; }
+                        lastSlot = slot;
+                    }
                     requestAnimationFrame(animateSpin);
                 } else {
-                    wheelAngle = targetAngle;
+                    wheelAngle = baseAngle + totalRotation;
+                    rBall = null;
+                    rWinIdx = winIndex;
                     drawRouletteWheel();
+                    playSound('tick');
                     settleRoulette(winningNum);
                 }
             }

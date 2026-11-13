@@ -85,10 +85,6 @@
                 document.getElementById('bj-status').innerText = "베팅 칩을 먼저 선택해주세요!";
                 return;
             }
-            
-            if (balance === 0) {
-                triggerAllInEffect();
-            }
 
             bjInRound = true;
             bjPlayerBlackjack = false;

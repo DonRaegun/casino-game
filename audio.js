@@ -27,6 +27,10 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(120, now + 0.04);
                 gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.04);
                 osc.start(now); osc.stop(now + 0.04);
+            } else if (type === 'tick') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(1500, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.03);
+                gain.gain.setValueAtTime(0.09, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.03);
+                osc.start(now); osc.stop(now + 0.03);
             } else if (type === 'kickout') {
                 osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
                 gain.gain.setValueAtTime(0.4, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.35);

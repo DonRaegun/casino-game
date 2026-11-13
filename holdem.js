@@ -211,7 +211,6 @@ let thNpcCount = 3;
                 renderThBoard();
 
                 if (balance === 0) {
-                    triggerAllInEffect();
                     document.getElementById('th-status').innerText = "🔥 잔액 전액 베팅! 자동 ALL-IN 처리됩니다.";
                     runAllInShowdown();
                 } else {
