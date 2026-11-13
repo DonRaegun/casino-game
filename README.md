@@ -1,7 +1,7 @@
 # 🎰 Royal Casino (로얄 카지노)
 
-[![Live Demo](https://img.shields.io/badge/Demo-Play%20Online-amber?style=for-the-badge&logo=googlechrome&logoColor=white)](https://gsg920.github.io/casino-game/)
-[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/gsg920/casino-game)
+[![Live Demo](https://img.shields.io/badge/Demo-Play%20Online-amber?style=for-the-badge&logo=googlechrome&logoColor=white)](https://donraegun.github.io/casino-game/)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DonRaegun/casino-game)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 웹 브라우저에서 별도의 설치 없이 즉시 즐길 수 있는 **싱글페이지 웹 카지노 미니게임**입니다.  
@@ -13,7 +13,7 @@
 
 별도의 다운로드나 설치 없이 아래 링크에서 바로 플레이하실 수 있습니다. (PC / 모바일 모두 지원)
 
-👉 **[https://donraegun.github.io/casino-game/](https://donraegun.github.io/casino-game//)**
+👉 **[https://donraegun.github.io/casino-game/](https://donraegun.github.io/casino-game/)**
 
 > **💡 GitHub Pages 배포 설정 안내**  
 > 저장소의 `Settings` ➡️ `Pages` ➡️ `Build and deployment`에서 **Source: Deploy from a branch**, **Branch: main / (root)**로 지정 후 `Save`를 누르면 위 주소로 무료 웹 호스팅이 활성화됩니다.
@@ -110,7 +110,7 @@
 ### 방법 1. 브라우저로 직접 실행
 1. 저장소를 클론하거나 ZIP 다운로드합니다.
    ```bash
-   git clone https://github.com/gsg920/casino-game.git
+   git clone https://github.com/DonRaegun/casino-game.git
    ```
 2. 다운로드된 폴더의 `index.html` 파일을 더블 클릭하여 웹 브라우저(Chrome, Edge 등)로 실행합니다.
 

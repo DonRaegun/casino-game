@@ -38,4 +38,4 @@ Your choices decide your ending.
 - 시뮬레이션 도박: 예
 - 폭력, 성적 내용, 욕설, 약물, 알코올 묘사: 없음
 - 인앱 결제, 광고, 사용자 간 통신, 위치 수집: 없음
-- 개인정보처리방침: https://gsg920.github.io/casino-game/privacy.html
+- 개인정보처리방침: https://donraegun.github.io/casino-game/privacy.html
