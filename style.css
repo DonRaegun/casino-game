@@ -510,7 +510,7 @@
 
             #th-rank-panel {
                 flex: 0 0 250px;
-                align-self: flex-start;
+                align-self: center;
             }
 
             #th-rank-list {
