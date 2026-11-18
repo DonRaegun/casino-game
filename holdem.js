@@ -288,11 +288,14 @@ let thNpcCount = 3;
                 if (sEl) sEl.innerText = npc.status;
             });
 
+            let rankIdx = -1;
             if (thPlayerHand.length === 2) {
                 const visibleCommunityCards = thCommunityCards.filter(c => c.revealed);
                 const evalRes = evaluate7CardHand([...thPlayerHand, ...visibleCommunityCards]);
                 document.getElementById('th-player-hand-rank').innerText = evalRes.rankName;
+                rankIdx = thRankRowIndex(evalRes);
             }
+            updateThRankPanel(rankIdx);
 
             thPlayerHand.forEach(c => c.isNew = false);
             thCommunityCards.forEach(c => c.isNew = false);
@@ -630,6 +633,56 @@ let thNpcCount = 3;
                 }
             }
             finishThRound();
+        }
+
+        // 족보 순위 패널. 순서는 1위(로열 스트레이트 플러시)부터 10위(하이카드)까지다.
+        const TH_RANKS = [
+            { name: '로열 스트레이트 플러시', desc: '같은 무늬 10-J-Q-K-A', cards: ['A♠', 'K♠', 'Q♠', 'J♠', '10♠'] },
+            { name: '스트레이트 플러시', desc: '같은 무늬 5장이 연속', cards: ['9♥', '8♥', '7♥', '6♥', '5♥'] },
+            { name: '포카드', desc: '같은 숫자 4장', cards: ['K♠', 'K♥', 'K♦', 'K♣', '3♠'] },
+            { name: '풀하우스', desc: '트리플 + 원페어', cards: ['Q♠', 'Q♥', 'Q♦', '7♣', '7♠'] },
+            { name: '플러시', desc: '같은 무늬 5장', cards: ['A♦', 'J♦', '8♦', '6♦', '3♦'] },
+            { name: '스트레이트', desc: '숫자 5장이 연속', cards: ['9♠', '8♥', '7♦', '6♣', '5♠'] },
+            { name: '트리플', desc: '같은 숫자 3장', cards: ['8♠', '8♥', '8♦', 'K♣', '4♠'] },
+            { name: '투페어', desc: '같은 숫자 2장이 두 쌍', cards: ['J♠', 'J♥', '5♦', '5♣', 'A♠'] },
+            { name: '원페어', desc: '같은 숫자 2장', cards: ['10♠', '10♥', 'A♦', '7♣', '3♠'] },
+            { name: '하이카드', desc: '아무 족보도 없음', cards: ['A♠', 'J♥', '8♦', '5♣', '2♠'] }
+        ];
+        let thRankShown = -1;
+
+        // evaluate7CardHand의 결과(category 0~8, 로열은 8 + 가장 높은 카드 A)를 패널의 줄 번호(0~9)로 바꾼다.
+        function thRankRowIndex(evalRes) {
+            if (!evalRes || typeof evalRes.category !== 'number') return -1;
+            if (evalRes.category === 8 && evalRes.kickers[0] === 14) return 0;
+            return 9 - evalRes.category;
+        }
+
+        function renderThRankList() {
+            const list = document.getElementById('th-rank-list');
+            if (!list) return;
+            list.innerHTML = TH_RANKS.map((rank, i) => `
+                <div class="th-rank-row" data-rank="${i}">
+                    <div class="th-rank-num">${i + 1}</div>
+                    <div class="th-rank-body">
+                        <div class="th-rank-name">${rank.name}</div>
+                        <div class="th-rank-desc">${rank.desc}</div>
+                        <div class="th-rank-cards">${rank.cards.map(c => `<span class="${c.includes('♥') || c.includes('♦') ? 'red' : ''}">${c}</span>`).join('')}</div>
+                    </div>
+                </div>`).join('');
+            thRankShown = -1;
+        }
+
+        // 내 현재 족보 줄만 진하게 하고 그 줄이 목록 가운데에 오도록 스크롤한다. -1이면 모두 흐리게 둔다.
+        function updateThRankPanel(idx) {
+            if (idx === thRankShown) return;
+            thRankShown = idx;
+            const list = document.getElementById('th-rank-list');
+            if (!list) return;
+            list.querySelectorAll('.th-rank-row').forEach((row, i) => row.classList.toggle('active', i === idx));
+            if (idx >= 0) {
+                const row = list.children[idx];
+                list.scrollTo({ top: row.offsetTop - (list.clientHeight - row.offsetHeight) / 2, behavior: 'smooth' });
+            }
         }
 
         function evaluate7CardHand(cards) {

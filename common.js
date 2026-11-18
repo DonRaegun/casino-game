@@ -264,6 +264,7 @@ let balance = 1000;
             disableThActionButtons();
             const thRank = document.getElementById('th-player-hand-rank');
             if (thRank) thRank.innerText = '';
+            updateThRankPanel(-1);
             updateGlobalBalanceUI();
             updateGameBetsUI();
         }

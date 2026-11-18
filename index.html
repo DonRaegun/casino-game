@@ -279,6 +279,7 @@
 
     <!-- ==================== VIEW 4: TEXAS HOLD'EM ==================== -->
     <div id="view-holdem" class="max-w-7xl w-full mx-auto flex-1 flex-col justify-between my-1 hidden">
+        <div id="th-main-row">
         <div id="th-table-container" class="poker-table flex-1 flex flex-col justify-between p-2.5 sm:p-6 relative min-h-[350px] sm:min-h-[460px]">
             <!-- ALL IN BANNER FOR HOLDEM -->
             <div id="th-allin-banner" class="global-allin-banner">ALL IN</div>
@@ -318,6 +319,13 @@
             <div id="th-players-scroll-wrapper">
                 <div id="th-players-container" class="flex justify-center items-end gap-1 sm:gap-3 mt-1 w-full px-1 pb-1"></div>
             </div>
+        </div>
+
+        <!-- 족보 순위: 내 현재 족보만 진하게 보이고 나머지는 흐리게 보인다 -->
+        <aside id="th-rank-panel" aria-label="족보 순위">
+            <div class="th-rank-title"><i class="fa-solid fa-ranking-star"></i> 족보 순위</div>
+            <div id="th-rank-list"></div>
+        </aside>
         </div>
 
         <!-- Texas Holdem Action Deck -->
@@ -484,6 +492,7 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             restoreGame();
+            renderThRankList();
             setupBjPlayerSeats();
             initRouletteBoard();
             setupThPlayerSeats();

@@ -395,3 +395,125 @@
         ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        /* 홀덤 족보 순위 패널: 큰 화면에서는 테이블 오른쪽, 좁은 화면에서는 테이블 아래에 둔다. */
+        #th-main-row {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.5rem;
+        }
+
+        #th-main-row > #th-table-container {
+            min-width: 0;
+        }
+
+        #th-rank-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            border-radius: 1rem;
+            padding: 0.5rem 0.6rem;
+        }
+
+        .th-rank-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #fbbf24;
+            margin-bottom: 0.4rem;
+        }
+
+        #th-rank-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 116px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .th-rank-row {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 56px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.6rem;
+            border: 1px solid transparent;
+            opacity: 0.4;
+            filter: grayscale(0.7);
+            transition: opacity 0.3s ease, filter 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .th-rank-row.active {
+            opacity: 1;
+            filter: none;
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.12);
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+        }
+
+        .th-rank-num {
+            flex: 0 0 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: #334155;
+            color: #f8fafc;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .th-rank-row.active .th-rank-num {
+            background: #f59e0b;
+            color: #0f172a;
+        }
+
+        .th-rank-name {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #f8fafc;
+            line-height: 1.2;
+        }
+
+        .th-rank-desc {
+            font-size: 0.625rem;
+            color: #94a3b8;
+            line-height: 1.2;
+        }
+
+        .th-rank-cards {
+            margin-top: 2px;
+            display: flex;
+            gap: 2px;
+        }
+
+        .th-rank-cards span {
+            font-size: 0.625rem;
+            font-weight: 800;
+            line-height: 1.1rem;
+            padding: 0 0.25rem;
+            background: #f8fafc;
+            color: #0f172a;
+            border-radius: 3px;
+        }
+
+        .th-rank-cards span.red {
+            color: #dc2626;
+        }
+
+        @media (min-width: 1024px) {
+            #th-main-row {
+                flex-direction: row;
+            }
+
+            #th-rank-panel {
+                flex: 0 0 250px;
+                align-self: flex-start;
+            }
+
+            #th-rank-list {
+                max-height: 236px;
+            }
+        }
