@@ -616,6 +616,7 @@ let thNpcCount = 3;
                 });
                 const winners = contenders.filter(c => compareHands(c.eval, best) === 0);
                 const playerWins = winners.some(w => w.player);
+                recordHandResult(thRankRowIndex(contenders[0].eval), playerWins && winners.length === 1);
 
                 if (playerWins) {
                     const share = Math.floor(thPot / winners.length);
@@ -668,8 +669,33 @@ let thNpcCount = 3;
                         <div class="th-rank-desc">${rank.desc}</div>
                         <div class="th-rank-cards">${rank.cards.map(c => `<span class="${c.includes('♥') || c.includes('♦') ? 'red' : ''}">${c}</span>`).join('')}</div>
                     </div>
+                    <div class="th-rank-stat"><div class="th-rank-pct"></div><div class="th-rank-count"></div></div>
                 </div>`).join('');
             thRankShown = -1;
+            renderThRankStats();
+        }
+
+        // 내 족보별 승률. 쇼다운까지 간 판만 센다. 무승부(팟을 나눔)는 판 수에는 들어가고 승리로는 세지 않는다.
+        const TH_STATS_KEY = 'exitCasino.handStats.v1';
+
+        function recordHandResult(idx, won) {
+            if (idx < 0) return;
+            const stats = readStorage(TH_STATS_KEY) || {};
+            const s = stats[idx] || { t: 0, w: 0 };
+            s.t += 1;
+            if (won) s.w += 1;
+            stats[idx] = s;
+            writeStorage(TH_STATS_KEY, stats);
+            renderThRankStats();
+        }
+
+        function renderThRankStats() {
+            const stats = readStorage(TH_STATS_KEY) || {};
+            document.querySelectorAll('#th-rank-list .th-rank-row').forEach((row, i) => {
+                const s = stats[i];
+                row.querySelector('.th-rank-pct').innerText = s && s.t ? `${Math.round(s.w / s.t * 100)}%` : '-';
+                row.querySelector('.th-rank-count').innerText = s && s.t ? `${s.w}승 / ${s.t}판` : '기록 없음';
+            });
         }
 
         // 내 현재 족보 줄만 진하게 하고 그 줄이 목록 가운데에 오도록 스크롤한다. -1이면 모두 흐리게 둔다.

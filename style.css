@@ -517,3 +517,27 @@
                 max-height: 236px;
             }
         }
+
+        .th-rank-stat {
+            margin-left: auto;
+            flex: 0 0 auto;
+            min-width: 3.4rem;
+            text-align: right;
+        }
+
+        .th-rank-pct {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #f8fafc;
+            line-height: 1.1;
+        }
+
+        .th-rank-count {
+            font-size: 0.6rem;
+            color: #94a3b8;
+            line-height: 1.2;
+        }
+
+        .th-rank-row.active .th-rank-pct {
+            color: #fbbf24;
+        }

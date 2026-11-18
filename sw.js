@@ -1,5 +1,5 @@
 // Offline cache for the PWA. Bump CACHE_VERSION whenever any cached file changes.
-const CACHE_VERSION = 'royal-casino-v11';
+const CACHE_VERSION = 'royal-casino-v12';
 
 const PRECACHE = [
   './',
