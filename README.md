@@ -139,7 +139,6 @@ casino-game/
 ├── server.js        # 경량 Node.js 로컬 정적 웹 서버
 ├── manifest.json    # PWA 설치 정보 (이름, 아이콘, 테마 색)
 ├── sw.js            # 서비스 워커 (오프라인 캐시)
-├── privacy.html     # 개인정보처리방침
 ├── tailwind.config.js / tailwind.input.css  # Tailwind 빌드 설정
 ├── vendor/          # 빌드된 Tailwind CSS, FontAwesome, 구글 폰트 CSS
 ├── fonts/           # 로컬 폰트 파일 (woff2)
